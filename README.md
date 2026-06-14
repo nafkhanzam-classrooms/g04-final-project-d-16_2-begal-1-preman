@@ -1,9 +1,22 @@
+
+## Anggota Kelompok 16:
+| Name | NRP | Class |
+| ---- | --- | ----- |
+| Pradhipta Raja Mahendra | 5025241055 | D |
+| Naufal Daffa Alfa Zain | 5025241066 | D |
+| Muhamad Aziz Romdhoni  | 5025241071 | D |
+
 # UNO Online Multiplayer
 
 > Game kartu **UNO** multiplayer berbasis jaringan — server Python *authoritative*, client web (browser) & Pygame, transport **TCP** untuk game state, **UDP/WebRTC** untuk live voice, dan **MariaDB** untuk persistensi.
 
-Final Project **Pemrograman Jaringan**
+Final Project mata kuliah **Pemrograman Jaringan** — Institut Teknologi Sepuluh Nopember (ITS).
 
+## Link Video Demo
+
+```
+https://youtu.be/dqdXZR9p7dE
+```
 ---
 
 ## Daftar Isi
@@ -29,9 +42,9 @@ Final Project **Pemrograman Jaringan**
 
 UNO Online adalah implementasi lengkap permainan kartu UNO yang dapat dimainkan **2–4 pemain** secara real-time melalui jaringan. Arsitektur memisahkan dengan tegas antara **server** dan **client**:
 
-- **Server bersifat *authoritative*** — seluruh aturan main, state permainan, pembagian kartu, dan validasi langkah diproses di server. Client hanya merender state dan mengirim input. Client **tidak dipercaya**, sehingga kecurangan (memainkan kartu ilegal, beraksi di luar giliran, dsb.) tidak mungkin karena ditolak oleh engine server.
-- **Dua jenis client**: client **web** (HTML/CSS/JS, jalan langsung di browser tanpa instalasi) sebagai client utama, dan client **Pygame** native opsional untuk demo desktop.
-- **Komunikasi multi-kanal**: TCP untuk game state yang andal & berurutan, UDP/WebRTC terpisah untuk live voice yang sensitif latency, serta WebSocket gateway sebagai jembatan browser ke server TCP.
+* **Server bersifat *authoritative*** — seluruh aturan main, state permainan, pembagian kartu, dan validasi langkah diproses di server. Client hanya merender state dan mengirim input. Client **tidak dipercaya**, sehingga kecurangan (memainkan kartu ilegal, beraksi di luar giliran, dsb.) tidak mungkin karena ditolak oleh engine server.
+* **Dua jenis client**: client **web** (HTML/CSS/JS, jalan langsung di browser tanpa instalasi) sebagai client utama, dan client **Pygame** native opsional untuk demo desktop.
+* **Komunikasi multi-kanal**: TCP untuk game state yang andal & berurutan, UDP/WebRTC terpisah untuk live voice yang sensitif latency, serta WebSocket gateway sebagai jembatan browser ke server TCP.
 
 Server berjalan multi-threaded (satu thread per koneksi client) dan menyimpan akun, statistik, leaderboard, serta riwayat match ke MariaDB.
 
@@ -85,9 +98,9 @@ Server berjalan multi-threaded (satu thread per koneksi client) dan menyimpan ak
 
 ### Mengapa pilihan transport ini?
 
-- **TCP untuk game state** — UNO bersifat *turn-based* dan butuh pengiriman aksi yang **andal & berurutan**. Kehilangan satu paket aksi merusak konsistensi state semua pemain, sehingga jaminan *reliable-ordered* TCP lebih penting daripada keunggulan latency UDP.
-- **UDP/WebRTC untuk voice** — audio live lebih sensitif terhadap delay daripada kehilangan frame kecil. Frame voice yang telat tidak perlu dikirim ulang, sehingga kanal voice dipisah agar sinkronisasi game di TCP tetap stabil.
-- **WebSocket gateway** — browser tidak bisa membuka raw TCP socket. Gateway menjadi adapter transport: browser berbicara WebSocket, gateway meneruskan paket ke server TCP custom yang sama.
+* **TCP untuk game state** — UNO bersifat *turn-based* dan butuh pengiriman aksi yang **andal & berurutan**. Kehilangan satu paket aksi merusak konsistensi state semua pemain, sehingga jaminan *reliable-ordered* TCP lebih penting daripada keunggulan latency UDP.
+* **UDP/WebRTC untuk voice** — audio live lebih sensitif terhadap delay daripada kehilangan frame kecil. Frame voice yang telat tidak perlu dikirim ulang, sehingga kanal voice dipisah agar sinkronisasi game di TCP tetap stabil.
+* **WebSocket gateway** — browser tidak bisa membuka raw TCP socket. Gateway menjadi adapter transport: browser berbicara WebSocket, gateway meneruskan paket ke server TCP custom yang sama.
 
 ---
 
@@ -142,9 +155,9 @@ Semua paket game adalah **JSON** dengan struktur:
 { "type": "PLAY_CARD", "seq": 42, "payload": { "card": {"color": "Red", "ctype": "5"} } }
 ```
 
-- **`type`** — tipe paket (lihat tabel di bawah).
-- **`seq`** — nomor urut monoton naik per koneksi (anti-replay).
-- **`payload`** — data spesifik tiap tipe.
+* **`type`** — tipe paket (lihat tabel di bawah).
+* **`seq`** — nomor urut monoton naik per koneksi (anti-replay).
+* **`payload`** — data spesifik tiap tipe.
 
 ### Framing TCP (`shared/protocol.py`)
 Karena TCP adalah stream tanpa batas pesan, tiap paket dibungkus **length-prefix**: 4 byte big-endian panjang body + body JSON UTF-8. Penerima membaca panjang dulu, lalu membaca tepat sejumlah byte tersebut — sehingga pesan tidak tercampur (*framing*).
@@ -287,9 +300,9 @@ uno-online/
 
 ### Modul inti yang perlu diketahui
 
-- **`server/core/game_engine.py`** — jantung permainan. Mengelola giliran (`_advance`), arah, efek kartu aksi/wild, draw stacking (`pending_draw`), UNO call/penalty/catch, deteksi pemenang & urutan finish, serta snapshot state (`get_state`). Semua keputusan final ada di sini.
-- **`server/socket_server.py`** — menerima koneksi (1 thread/client), routing paket ke handler, mengelola room/matchmaking, broadcast state, reconnect, dan **session takeover**.
-- **`web/app.js`** — client web lengkap: koneksi WebSocket, render seluruh view, input kartu (termasuk *playable highlight* & multi-select angka), pemilih warna wild, voice WebRTC, dan riwayat match.
+* **`server/core/game_engine.py`** — jantung permainan. Mengelola giliran (`_advance`), arah, efek kartu aksi/wild, draw stacking (`pending_draw`), UNO call/penalty/catch, deteksi pemenang & urutan finish, serta snapshot state (`get_state`). Semua keputusan final ada di sini.
+* **`server/socket_server.py`** — menerima koneksi (1 thread/client), routing paket ke handler, mengelola room/matchmaking, broadcast state, reconnect, dan **session takeover**.
+* **`web/app.js`** — client web lengkap: koneksi WebSocket, render seluruh view, input kartu (termasuk *playable highlight* & multi-select angka), pemilih warna wild, voice WebRTC, dan riwayat match.
 
 ---
 
@@ -438,9 +451,9 @@ python tests/test_flow_inproc.py
 
 ## 14. Catatan Operasional
 
-- **Logging** tersimpan di `data/logs/server.log` dan tabel `activity_log`.
-- **Reconnect** — putus koneksi saat match memberi **30 detik** untuk kembali sebelum dianggap keluar.
-- **Operasi Docker umum:**
+* **Logging** tersimpan di `data/logs/server.log` dan tabel `activity_log`.
+* **Reconnect** — putus koneksi saat match memberi **30 detik** untuk kembali sebelum dianggap keluar.
+* **Operasi Docker umum:**
 
   ```bash
   docker compose ps                 # status container
@@ -451,8 +464,60 @@ python tests/test_flow_inproc.py
   docker compose down -v            # hentikan + hapus data MariaDB (hati-hati)
   ```
 
-- **Redeploy hanya perubahan web/server** cukup `docker compose up -d --build server` (image membundle `web/`, `server/`, `shared/`, `client/assets/`).
+* **Redeploy hanya perubahan web/server** cukup `docker compose up -d --build server` (image membundle `web/`, `server/`, `shared/`, `client/assets/`).
 
 ---
 
-<p align="center"><i>Network Programming Final Project — Institut Teknologi Sepuluh Nopember (ITS)</i></p>
+---
+
+## Kredit dan Atribusi Aset
+
+Proyek **UNO Card Online** ini dikembangkan sebagai Final Project Mata Kuliah **Pemrograman Jaringan**.
+
+### Aset Permainan
+
+#### UNO Card Game Asset Pack
+* Kreator: **Alex Der**
+* Sumber: https://alexder.itch.io/uno-card-game-asset-pack
+* Penggunaan:
+  - Gambar kartu UNO
+  - Latar belakang kartu
+  - Berbagai aset visual permainan lainnya
+
+### Aset Audio
+
+#### Musik Latar Lobby
+* **Musical Relaxing Guitar Loop V5**
+* Sumber: https://pixabay.com/sound-effects/musical-relaxing-guitar-loop-v5-245859/
+
+#### Suara Kemenangan
+* **Musical Victory Chime**
+* Sumber: https://pixabay.com/sound-effects/musical-victory-chime-366449/
+
+#### Musik Latar Saat Bermain
+* **Musical Fun Music Free**
+* Sumber: https://pixabay.com/sound-effects/musical-fun-music-free-475064/
+
+#### Suara Kekalahan
+* **Film Special Effects Losing Horn**
+* Sumber: https://pixabay.com/sound-effects/film-special-effects-losing-horn-313723/
+
+#### Suara Klik Tombol dan Kartu
+* **Film Special Effects Sound 1**
+* Sumber: https://pixabay.com/sound-effects/film-special-effects-sound-1-167181/
+
+#### Suara Mengambil Kartu
+* **People Fah**
+* Sumber: https://pixabay.com/sound-effects/people-fah-469417/
+
+#### Suara Kartu Spesial (+2, +4, Wild)
+* **Film Special Effects Simple Whoosh**
+* Sumber: https://pixabay.com/sound-effects/film-special-effects-simple-whoosh-382724/
+
+#### Suara Keluar Permainan / Keluar Room
+* **Nature Goat Sound**
+* Sumber: https://pixabay.com/sound-effects/nature-goat-sound-390298/
+
+### Ucapan Terima Kasih
+
+Kami mengucapkan terima kasih kepada seluruh kreator aset yang telah menyediakan karya mereka untuk digunakan oleh komunitas. Seluruh hak cipta dan hak kekayaan intelektual atas aset-aset pihak ketiga tetap menjadi milik pemilik masing-masing.
