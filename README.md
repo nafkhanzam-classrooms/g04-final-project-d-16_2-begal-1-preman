@@ -2,7 +2,7 @@
 
 > Game kartu **UNO** multiplayer berbasis jaringan — server Python *authoritative*, client web (browser) & Pygame, transport **TCP** untuk game state, **UDP/WebRTC** untuk live voice, dan **MariaDB** untuk persistensi.
 
-Proyek mata kuliah **Pemrograman Jaringan** — Institut Teknologi Sepuluh Nopember (ITS).
+Final Project **Pemrograman Jaringan**
 
 ---
 
